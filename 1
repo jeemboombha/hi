@@ -1,0 +1,91 @@
+import { Component, OnInit } from '@angular/core';
+import { Node, Edge, Layout } from '@swimlane/ngx-graph';
+import * as shapeSvg from 'd3-shape';
+
+@Component({
+  selector: 'app-service-graph',
+  templateUrl: './service-graph.component.html',
+  styleUrls: ['./service-graph.component.css']
+})
+export class ServiceGraphComponent implements OnInit {
+  nodes: Node[] = [];
+  links: Edge[] = [];
+  layout: Layout = {
+    name: 'dagre',
+    orientation: 'UD'
+  };
+  curve = shapeSvg.curveBasis;
+  selected: { [id: string]: boolean } = {};
+
+  ngOnInit() {
+    this.nodes = [
+      { id: '1', label: 'Service A', data: { status: 'Up' } },
+      { id: '2', label: 'Service B', data: { status: 'Down' } },
+      { id: '3', label: 'Service C', data: { status: 'Up' } }
+    ];
+    this.links = [
+      { source: '1', target: '2', label: 'depends on' },
+      { source: '2', target: '3', label: 'depends on' }
+    ];
+  }
+
+  toggleSelect(node: Node) {
+    this.selected[node.id] = !this.selected[node.id];
+  }
+
+  nodeDraggable(): boolean {
+    return false;
+  }
+}
+
+
+
+
+<ngx-graph
+  class="chart-container"
+  [nodes]="nodes"
+  [links]="links"
+  [layout]="layout"
+  [curve]="curve"
+  [draggingEnabled]="false"
+  [draggingNodeEnabled]="false"
+  [panningEnabled]="true"
+  [zoomEnabled]="true"
+>
+  <ng-template #nodeTemplate let-node>
+    <svg:g [attr.transform]="'translate(' + node.position.x + ',' + node.position.y + ')'">
+      <svg:rect
+        width="140"
+        height="60"
+        rx="8" ry="8"
+        stroke="black"
+        [attr.fill]="node.data.status === 'Up' ? '#28a745' : '#dc3545'"
+      ></svg:rect>
+      <foreignObject width="140" height="60" x="0" y="0">
+        <div xmlns="http://www.w3.org/1999/xhtml"
+             style="display: flex; align-items: center; justify-content: space-around; height:100%; font-weight: bold; color: white;">
+          <input type="checkbox"
+                 [checked]="selected[node.id]"
+                 (change)="toggleSelect(node)" />
+          {{ node.label }}
+        </div>
+      </foreignObject>
+    </svg:g>
+  </ng-template>
+</ngx-graph>
+
+
+
+
+
+.chart-container {
+  width: 100%;
+  height: 500px;
+  border: 1px solid #ddd;
+}
+
+/* Disable pointer cursor on nodes to indicate they aren't draggable */
+.chart-container g.node {
+  cursor: default;
+}
+
