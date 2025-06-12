@@ -1,0 +1,139 @@
+<div class="graph-container">
+  <ngx-graph
+    [links]="links"
+    [nodes]="nodes"
+    [layout]="'dagre'"
+    [panOnZoom]="true"
+    [enableZoom]="true"
+    [zoomSpeed]="0.1"
+    [autoZoom]="true"
+    [draggingEnabled]="false"
+    (nodeSelected)="onNodeClick($event)">
+  </ngx-graph>
+
+  <!-- Side Panel -->
+  <div class="details-panel" *ngIf="selectedGroup">
+    <h3>{{ selectedGroup.name }} - Services</h3>
+    <table mat-table [dataSource]="selectedGroup.services" class="mat-elevation-z2" style="width: 100%;">
+      
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Service</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">
+          <span [ngClass]="element.status === 'Up' ? 'status-up' : 'status-down'">
+            {{ element.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['name', 'status', 'id']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name', 'status', 'id'];"></tr>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+.graph-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+
+  ngx-graph {
+    flex: 3;
+    height: 100%;
+    background-color: #fafafa;
+  }
+
+  .details-panel {
+    flex: 1;
+    padding: 16px;
+    border-left: 1px solid #ddd;
+    background-color: #fff;
+    overflow-y: auto;
+  }
+
+  .status-up {
+    color: green;
+    font-weight: bold;
+  }
+
+  .status-down {
+    color: red;
+    font-weight: bold;
+  }
+}
+
+
+
+
+
+
+
+
+
+import { Component } from '@angular/core';
+import { Node, Edge } from '@swimlane/ngx-graph';
+
+@Component({
+  selector: 'app-service-graph',
+  templateUrl: './service-graph.component.html',
+  styleUrls: ['./service-graph.component.scss']
+})
+export class ServiceGraphComponent {
+  nodes: Node[] = [
+    {
+      id: 'group1',
+      label: 'Collection A',
+      data: { name: 'Collection A' }
+    },
+    {
+      id: 'group2',
+      label: 'Collection B',
+      data: { name: 'Collection B' }
+    }
+  ];
+
+  links: Edge[] = [
+    { source: 'group1', target: 'group2', label: 'depends on' }
+  ];
+
+  // Service collections mapped to nodes
+  serviceGroups: any = {
+    group1: {
+      name: 'Collection A',
+      services: [
+        { name: 'Service 1', status: 'Up', id: 'S1' },
+        { name: 'Service 2', status: 'Down', id: 'S2' }
+      ]
+    },
+    group2: {
+      name: 'Collection B',
+      services: [
+        { name: 'Service 3', status: 'Up', id: 'S3' },
+        { name: 'Service 4', status: 'Down', id: 'S4' }
+      ]
+    }
+  };
+
+  selectedGroup: any = null;
+
+  onNodeClick(event: any) {
+    const nodeId = event.id;
+    this.selectedGroup = this.serviceGroups[nodeId];
+  }
+}
