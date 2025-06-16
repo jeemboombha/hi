@@ -1,0 +1,107 @@
+<div class="details-panel" *ngIf="selectedGroup">
+  <h3>{{ selectedGroup.name }} - Services</h3>
+
+  <table mat-table [dataSource]="groupRows" multiTemplateDataRows class="mat-elevation-z2" style="width: 100%;">
+    
+    <!-- Group Row -->
+    <ng-container matColumnDef="group">
+      <th mat-header-cell *matHeaderCellDef>Group Name</th>
+      <td mat-cell *matCellDef="let row" (click)="toggleRow(row)">
+        <span style="cursor: pointer; font-weight: bold;">
+          ▶ {{ row.name }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Detail Row -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let row" [attr.colspan]="1">
+        <div class="inner-table-wrapper" *ngIf="expandedRow === row">
+
+          <table mat-table [dataSource]="row.services" class="inner-table" style="width: 100%; margin-top: 10px;">
+            
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Service</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let element">
+                <span [ngClass]="element.status === 'Up' ? 'status-up' : 'status-down'">
+                  {{ element.status }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['name', 'status', 'id']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['name', 'status', 'id'];"></tr>
+          </table>
+
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Row Definitions -->
+    <tr mat-header-row *matHeaderRowDef="['group']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['group'];" class="group-row"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+  </table>
+</div>
+
+
+
+
+
+
+
+groupRows = [
+  {
+    name: 'Team Alpha',
+    services: [
+      { id: 'S1', name: 'Service 1', status: 'Up' },
+      { id: 'S2', name: 'Service 2', status: 'Down' }
+    ]
+  },
+  {
+    name: 'Team Beta',
+    services: [
+      { id: 'S3', name: 'Service 3', status: 'Up' },
+      { id: 'S4', name: 'Service 4', status: 'Up' }
+    ]
+  }
+];
+
+expandedRow: any = null;
+
+toggleRow(row: any) {
+  this.expandedRow = this.expandedRow === row ? null : row;
+}
+
+
+
+
+.group-row {
+  cursor: pointer;
+}
+
+.inner-table-wrapper {
+  padding: 8px;
+  background-color: #f9f9f9;
+}
+
+.status-up {
+  color: green;
+  font-weight: bold;
+}
+
+.status-down {
+  color: red;
+  font-weight: bold;
+}
+
