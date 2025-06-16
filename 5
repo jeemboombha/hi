@@ -1,0 +1,207 @@
+// component.ts
+import { Node, Edge } from '@swimlane/ngx-graph';
+
+export class ServiceGraphComponent {
+  nodes: Node[] = [
+    {
+      id: 'class1',
+      label: 'Main Class',
+      data: {
+        groups: [
+          { 
+            name: 'Group A',
+            services: [
+              { id: 'S1', name: 'Service 1', status: 'Up' },
+              { id: 'S2', name: 'Service 2', status: 'Down' }
+            ]
+          }
+        ]
+      },
+      meta: {
+        checked: false
+      }
+    }
+  ];
+
+  links: Edge[] = [
+    { id: 'link1', source: 'class1', target: 'class2', label: 'Depends on' }
+  ];
+
+  selectedNode: Node | null = null;
+}
+
+
+
+
+
+
+
+
+
+<!-- component.html -->
+<div class="container">
+  <ngx-graph
+    [nodes]="nodes"
+    [links]="links"
+    [draggingEnabled]="false"
+    (select)="onNodeClick($event)">
+    
+    <ng-template #nodeTemplate let-node>
+      <div class="node" [class.selected]="selectedNode?.id === node.id">
+        <mat-checkbox 
+          [(ngModel)]="node.meta.checked"
+          (click)="$event.stopPropagation()">
+        </mat-checkbox>
+        {{ node.label }}
+      </div>
+    </ng-template>
+
+  </ngx-graph>
+
+  <!-- Side Panel -->
+  <div class="side-panel" *ngIf="selectedNode">
+    <h3>{{ selectedNode.label }} - Service Groups</h3>
+    <!-- Add table component here -->
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- group-table.component.html -->
+<table mat-table [dataSource]="groups" multiTemplateDataRows>
+  
+  <!-- Group Name Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Group Name</th>
+    <td mat-cell *matCellDef="let group" (click)="toggleExpand(group)">
+      <mat-icon>{{ expandedGroup === group ? 'expand_more' : 'chevron_right' }}</mat-icon>
+      {{ group.name }}
+      <mat-checkbox 
+        [(ngModel)]="group.checked"
+        (click)="$event.stopPropagation()">
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <!-- Expanded Services Row -->
+  <ng-container matColumnDef="expanded">
+    <td mat-cell *matCellDef="let group" [attr.colspan]="columns.length">
+      <div *ngIf="expandedGroup === group">
+        <mat-table [dataSource]="group.services">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Service Name</th>
+            <td mat-cell *matCellDef="let service">{{ service.name }}</td>
+          </ng-container>
+
+          <!-- Add other service columns -->
+
+          <tr mat-header-row *matHeaderRowDef="['name', 'status', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'status', 'actions']"></tr>
+        </mat-table>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['name']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['name']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['expanded']"></tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+<div class="bulk-actions">
+  <button mat-button (click)="performBulkAction('start')">
+    <mat-icon>play_arrow</mat-icon> Start Selected
+  </button>
+  <button mat-button (click)="performBulkAction('stop')">
+    <mat-icon>stop</mat-icon> Stop Selected
+  </button>
+</div>
+
+
+
+
+
+
+
+
+
+.container {
+  display: flex;
+  height: 80vh;
+}
+
+ngx-graph {
+  flex: 2;
+  border: 1px solid #ccc;
+}
+
+.side-panel {
+  flex: 1;
+  margin-left: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  overflow-y: auto;
+}
+
+.node {
+  padding: 10px;
+  background: white;
+  border: 2px solid #3f51b5;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.node.selected {
+  border-color: #ff4081;
+  box-shadow: 0 0 8px rgba(255,64,129,0.3);
+}
+
+
+
+
+
+
+
+
+// component.ts
+export class ServiceGraphComponent {
+  expandedGroup: any = null;
+  selectedNodeGroups: any[] = [];
+
+  onNodeClick(node: Node): void {
+    this.selectedNode = node;
+    this.selectedNodeGroups = node.data.groups;
+  }
+
+  toggleExpand(group: any): void {
+    this.expandedGroup = this.expandedGroup === group ? null : group;
+  }
+
+  performBulkAction(action: string): void {
+    const selectedServices = this.getSelectedServices();
+    // Implement your action logic here
+  }
+
+  private getSelectedServices(): any[] {
+    return this.selectedNodeGroups
+      .filter(group => group.checked)
+      .flatMap(group => group.services);
+  }
+}
+
