@@ -205,3 +205,145 @@ export class ServiceGraphComponent {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+import { Component } from '@angular/core';
+import { Node, Edge } from '@swimlane/ngx-graph';
+import { MatTableDataSource } from '@angular/material/table';
+
+interface ServiceGroup {
+  name: string;
+  services: Service[];
+  checked?: boolean;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  status: 'Up' | 'Down';
+  checked?: boolean;
+}
+
+@Component({
+  selector: 'app-service-graph',
+  templateUrl: './service-graph.component.html',
+  styleUrls: ['./service-graph.component.css']
+})
+export class ServiceGraphComponent {
+  // Graph Configuration
+  nodes: Node[] = [
+    {
+      id: 'class1',
+      label: 'Main Class',
+      data: {
+        groups: [
+          { 
+            name: 'Group A',
+            services: [
+              { id: 'S1', name: 'Service 1', status: 'Up' },
+              { id: 'S2', name: 'Service 2', status: 'Down' }
+            ],
+            checked: false
+          },
+          {
+            name: 'Group B',
+            services: [
+              { id: 'S3', name: 'Service 3', status: 'Up' },
+              { id: 'S4', name: 'Service 4', status: 'Up' }
+            ],
+            checked: false
+          }
+        ]
+      },
+      meta: {
+        checked: false
+      }
+    },
+    {
+      id: 'class2',
+      label: 'Support Class',
+      data: {
+        groups: [
+          { 
+            name: 'Group C',
+            services: [
+              { id: 'S5', name: 'Service 5', status: 'Down' },
+              { id: 'S6', name: 'Service 6', status: 'Down' }
+            ],
+            checked: false
+          }
+        ]
+      },
+      meta: {
+        checked: false
+      }
+    }
+  ];
+
+  links: Edge[] = [
+    { id: 'link1', source: 'class1', target: 'class2', label: 'Depends on' }
+  ];
+
+  // Panel State
+  selectedNode: Node | null = null;
+  expandedGroup: ServiceGroup | null = null;
+  groupColumns: string[] = ['name'];
+  serviceColumns: string[] = ['name', 'status', 'actions'];
+
+  // Data Sources
+  get groupsDataSource(): ServiceGroup[] {
+    return this.selectedNode?.data.groups || [];
+  }
+
+  // Selection Handling
+  onNodeClick(node: Node): void {
+    this.selectedNode = node;
+    this.expandedGroup = null;
+  }
+
+  toggleExpand(group: ServiceGroup): void {
+    this.expandedGroup = this.expandedGroup === group ? null : group;
+  }
+
+  // Bulk Actions
+  performBulkAction(action: string): void {
+    const selected = this.getSelectedServices();
+    console.log(`Performing ${action} on:`, selected);
+    // Implement your service control logic here
+  }
+
+  private getSelectedServices(): Service[] {
+    return this.groupsDataSource
+      .filter(group => group.checked)
+      .flatMap(group => group.services);
+  }
+
+  // Helper Methods
+  toggleAllGroupServices(group: ServiceGroup, checked: boolean): void {
+    group.services.forEach(service => service.checked = checked);
+  }
+
+  getGroupServiceState(group: ServiceGroup): string {
+    const upCount = group.services.filter(s => s.status === 'Up').length;
+    return `${upCount}/${group.services.length} Up`;
+  }
+
+  trackByGroup(index: number, group: ServiceGroup): string {
+    return group.name;
+  }
+
+  trackByService(index: number, service: Service): string {
+    return service.id;
+  }
+}
+
+
