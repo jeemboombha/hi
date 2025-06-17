@@ -105,3 +105,72 @@ toggleRow(row: any) {
   font-weight: bold;
 }
 
+.graph-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ✅ Default full-width graph */
+.graph-full {
+  flex: 1;
+}
+
+/* ✅ When panel is visible, graph should be 2/3 */
+.graph-two-thirds {
+  flex: 2;
+}
+
+/* ✅ Panel takes 1/3 */
+.details-panel {
+  flex: 1;
+  padding: 16px;
+  border-left: 1px solid #ddd;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+
+<div class="graph-container">
+  <ngx-graph
+    [links]="links"
+    [nodes]="nodes"
+    [layout]="'dagre'"
+    [panOnZoom]="true"
+    [enableZoom]="true"
+    [zoomSpeed]="0.1"
+    [autoZoom]="true"
+    [draggingEnabled]="false"
+    (nodeSelected)="onNodeClick($event)"
+    [ngClass]="selectedGroup ? 'graph-two-thirds' : 'graph-full'">
+
+    <ng-template #nodeTemplate let-node>
+      <svg:g [attr.transform]="'translate(' + node.position.x + ',' + node.position.y + ')'">
+        <svg:rect
+          width="140"
+          height="60"
+          rx="8" ry="8"
+          stroke="black"
+          [attr.fill]="node.data.status === 'Up' ? '#28a745' : '#dc3545'"></svg:rect>
+        <foreignObject width="140" height="60" x="0" y="0">
+          <div xmlns="http://www.w3.org/1999/xhtml"
+               style="display: flex; align-items: center; justify-content: space-around; height:100%; font-weight: bold; color: white;">
+            <input type="checkbox"
+                   [checked]="selected[node.id]"
+                   (change)="toggleSelect(node)" />
+            {{ node.label }}
+          </div>
+        </foreignObject>
+      </svg:g>
+    </ng-template>
+  </ngx-graph>
+
+  <!-- ✅ Show only if selectedGroup is not null -->
+  <div class="details-panel" *ngIf="selectedGroup">
+    <h3>{{ selectedGroup.name }} - Services</h3>
+
+    <!-- table here -->
+    <!-- your existing material table code -->
+  </div>
+</div>
