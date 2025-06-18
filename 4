@@ -145,6 +145,38 @@ toggleRow(row: any) {
     (nodeSelected)="onNodeClick($event)"
     [ngClass]="selectedGroup ? 'graph-two-thirds' : 'graph-full'">
 
+		<ng-template #defsTemplate>
+    <svg:marker
+      id="arrow"
+      viewBox="0 -5 10 10"
+      refX="15"
+      refY="0"
+      markerWidth="6"
+      markerHeight="6"
+      orient="auto">
+      <svg:path d="M0,-5L10,0L0,5" fill="#555" />
+    </svg:marker>
+  </ng-template>
+
+		<ng-template #linkTemplate let-link>
+    <svg:g class="edge">
+      <svg:path
+        class="line"
+        stroke="black"
+        stroke-width="2"
+        [attr.id]="link.id"
+        marker-end="url(#arrow)">
+      </svg:path>
+      <svg:text class="edge-label" text-anchor="middle">
+        <textPath
+          [attr.href]="'#' + link.id"
+          startOffset="50%">
+          {{ link.label }}
+        </textPath>
+      </svg:text>
+    </svg:g>
+  </ng-template>
+
     <ng-template #nodeTemplate let-node>
       <svg:g [attr.transform]="'translate(' + node.position.x + ',' + node.position.y + ')'">
         <svg:rect
