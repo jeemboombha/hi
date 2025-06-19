@@ -1,0 +1,49 @@
+nodes = [
+  { id: 'a1', label: 'A1' },
+  { id: 'a2', label: 'A2' },
+  { id: 'b1', label: 'B1' },
+  { id: 'b2', label: 'B2' },
+  { id: 'c1', label: 'C1' },
+  { id: 'c2', label: 'C2' },
+  { id: 'd1', label: 'D1' },
+  { id: 'd2', label: 'D2' },
+  { id: 'e1', label: 'E1' },
+  { id: 'e2', label: 'E2' },
+];
+
+
+
+clusters = [
+  { id: 'cluster1', label: 'Group 1', childNodeIds: ['a1', 'a2'] },
+  { id: 'cluster2', label: 'Group 2', childNodeIds: ['b1', 'b2'] },
+  { id: 'cluster3', label: 'Group 3', childNodeIds: ['c1', 'c2'] },
+  { id: 'cluster4', label: 'Group 4', childNodeIds: ['d1', 'd2'] },
+  { id: 'cluster5', label: 'Group 5', childNodeIds: ['e1', 'e2'] },
+];
+
+
+links = [
+  { id: 'l1', source: 'a1', target: 'b1' },
+  { id: 'l2', source: 'a2', target: 'b2' },
+  { id: 'l3', source: 'b1', target: 'c1' },
+  { id: 'l4', source: 'b2', target: 'c2' },
+  { id: 'l5', source: 'c1', target: 'd1' },
+  { id: 'l6', source: 'c2', target: 'd2' },
+  { id: 'l7', source: 'd1', target: 'e1' },
+  { id: 'l8', source: 'd2', target: 'e2' }
+];
+
+
+
+<ng-template #clusterTemplate let-cluster>
+  <svg:g class="node cluster">
+    <svg:rect
+      rx="8" ry="8"
+      [attr.width]="cluster.dimension.width"
+      [attr.height]="cluster.dimension.height"
+      fill="#e3e3e3"
+      stroke="#999"
+    />
+    <svg:text x="10" y="20" font-weight="bold">{{ cluster.label }}</svg:text>
+  </svg:g>
+</ng-template>
