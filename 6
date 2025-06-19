@@ -47,3 +47,22 @@ links = [
     <svg:text x="10" y="20" font-weight="bold">{{ cluster.label }}</svg:text>
   </svg:g>
 </ng-template>
+
+OR
+
+<svg:g class="node cluster">
+  <svg:rect
+    rx="8" ry="8"
+    [attr.width]="cluster.dimension.width"
+    [attr.height]="cluster.dimension.height"
+    fill="#e3e3e3"
+    stroke="#999"
+  />
+  <svg:text
+    [attr.x]="cluster.dimension.width / 2"
+    [attr.y]="20"
+    text-anchor="middle"
+    font-weight="bold">
+    {{ cluster.label }}
+  </svg:text>
+</svg:g>
