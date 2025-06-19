@@ -66,3 +66,40 @@ OR
     {{ cluster.label }}
   </svg:text>
 </svg:g>
+
+
+
+import { DagreNodesOnlyLayout } from '@swimlane/ngx-graph';
+import dagre from 'dagre';
+
+export class CustomHorizontalLayout extends DagreNodesOnlyLayout {
+  dagreGraph: dagre.graphlib.Graph;
+
+  constructor() {
+    super();
+
+    this.dagreGraph.setGraph({
+      rankdir: 'LR', // 👈 Left to Right orientation
+      align: undefined,
+      ranksep: 100,
+      nodesep: 50,
+      marginx: 20,
+      marginy: 20
+    });
+  }
+}
+
+
+
+export class CustomHorizontalLayout extends DagreNodesOnlyLayout {
+  constructor() {
+    super();
+    this.dagreGraph.setGraph({
+      rankdir: 'LR', // 👈 This sets Left-to-Right orientation
+      nodesep: 50,   // Horizontal spacing between nodes
+      ranksep: 80,   // Vertical spacing between levels
+      marginx: 20,
+      marginy: 20
+    });
+  }
+}
