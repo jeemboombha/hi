@@ -103,3 +103,30 @@ export class CustomHorizontalLayout extends DagreNodesOnlyLayout {
     });
   }
 }
+
+
+
+
+export class YourComponent {
+  selectedNodeIds: string[] = [];
+
+  toggleNodeSelection(nodeId: string, isSelected: boolean): void {
+    if (isSelected) {
+      if (!this.selectedNodeIds.includes(nodeId)) {
+        this.selectedNodeIds.push(nodeId);
+      }
+    } else {
+      this.selectedNodeIds = this.selectedNodeIds.filter(id => id !== nodeId);
+    }
+  }
+
+  performActionOnSelected(): void {
+    // Your logic here – maybe log or process selected nodes
+    console.log('Selected Node IDs:', this.selectedNodeIds);
+
+    // Example: Filter out Down nodes or do something else
+    // Or send them to backend API
+  }
+}
+
+
