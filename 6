@@ -130,3 +130,38 @@ export class YourComponent {
 }
 
 
+
+
+<ng-template #clusterTemplate let-cluster>
+  <svg:g class="node cluster">
+    <svg:rect
+      rx="8" ry="8"
+      [attr.width]="cluster.dimension.width"
+      [attr.height]="cluster.dimension.height"
+      class="cluster-rect"
+      fill="#e3e3e3"
+      stroke="#999"
+    />
+    <svg:text x="10" y="20" class="cluster-label">
+      {{ cluster.label }}
+    </svg:text>
+  </svg:g>
+</ng-template>
+
+
+
+
+.cluster-rect {
+  fill: #f9f9f9;
+  stroke: #444;
+  stroke-width: 2px;
+  rx: 10;
+  ry: 10;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.cluster-label {
+  font-weight: bold;
+  font-size: 14px;
+  fill: #222;
+}
