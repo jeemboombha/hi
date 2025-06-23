@@ -247,3 +247,34 @@ layout = {
     };
   }
 };
+
+
+import * as dagre from 'dagre';
+
+computeLayout() {
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir: 'LR', ranksep: 100, nodesep: 50 });
+  g.setDefaultEdgeLabel(() => ({}));
+
+  this.nodes.forEach(node => {
+    g.setNode(node.id, {
+      width: 100,
+      height: 60
+    });
+  });
+
+  this.links.forEach(link => {
+    g.setEdge(link.source, link.target);
+  });
+
+  dagre.layout(g);
+
+  // Assign computed positions
+  this.nodes = this.nodes.map(n => ({
+    ...n,
+    position: {
+      x: g.node(n.id).x,
+      y: g.node(n.id).y
+    }
+  }));
+}
