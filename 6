@@ -204,3 +204,46 @@ layout = {
     };
   }
 };
+
+
+
+
+import * as dagre from 'dagre';
+
+layout = {
+  name: 'custom',
+  engine: (nodes, links, clusters) => {
+    const g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: 'LR', ranksep: 100, nodesep: 50 });
+    g.setDefaultEdgeLabel(() => ({}));
+
+    // Add all nodes
+    nodes.forEach(node => {
+      g.setNode(node.id, {
+        width: node.dimension?.width || 100,
+        height: node.dimension?.height || 60
+      });
+    });
+
+    // Add all links
+    links.forEach(link => {
+      g.setEdge(link.source, link.target);
+    });
+
+    // Apply layout
+    dagre.layout(g);
+
+    // Return updated node positions
+    return {
+      nodes: nodes.map(n => ({
+        ...n,
+        position: {
+          x: g.node(n.id).x,
+          y: g.node(n.id).y
+        }
+      })),
+      links,
+      clusters
+    };
+  }
+};
