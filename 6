@@ -165,3 +165,42 @@ export class YourComponent {
   font-size: 14px;
   fill: #222;
 }
+
+
+
+import * as dagre from 'dagre';
+import { Node, Edge, ClusterNode } from '@swimlane/ngx-graph';
+
+layout = {
+  name: 'custom',
+  engine: (nodes: Node[], edges: Edge[], clusters: ClusterNode[]) => {
+    const g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: 'TB' }); // TB = top-to-bottom
+    g.setDefaultEdgeLabel(() => ({}));
+
+    nodes.forEach(node => {
+      g.setNode(node.id, {
+        width: node.dimension?.width || 100,
+        height: node.dimension?.height || 60
+      });
+    });
+
+    edges.forEach(link => {
+      g.setEdge(link.source, link.target);
+    });
+
+    dagre.layout(g);
+
+    return {
+      nodes: nodes.map(n => ({
+        ...n,
+        position: {
+          x: g.node(n.id).x,
+          y: g.node(n.id).y
+        }
+      })),
+      links: edges,
+      clusters
+    };
+  }
+};
