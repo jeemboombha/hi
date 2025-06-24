@@ -1,0 +1,21 @@
+<ng-container matColumnDef="description">
+  <th mat-header-cell *matHeaderCellDef> Description </th>
+  <td mat-cell *matCellDef="let element">
+    <div>
+      <span *ngIf="!expandedRows[element.id]">
+        {{ element.description | slice:0:100 }}
+        <span *ngIf="element.description.length > 100">... 
+          <button mat-button (click)="toggleRow(element.id)">Show more</button>
+        </span>
+      </span>
+
+      <span *ngIf="expandedRows[element.id]">
+        {{ element.description }}
+        <button mat-button (click)="toggleRow(element.id)">Show less</button>
+      </span>
+    </div>
+  </td>
+</ng-container>
+
+
+
