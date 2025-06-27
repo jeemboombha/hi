@@ -1,0 +1,81 @@
+<ng-template #defsTemplate>
+  <svg:marker id="arrow-start" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
+    <svg:path d="M10,0 L0,3 L10,6" fill="black" />
+  </svg:marker>
+
+  <svg:marker id="arrow-end" markerWidth="6" markerHeight="6" refX="10" refY="3" orient="auto">
+    <svg:path d="M0,0 L10,3 L0,6" fill="black" />
+  </svg:marker>
+</ng-template>
+
+
+
+
+
+export interface CustomEdge extends Edge {
+  arrowPosition?: 'start' | 'end' | 'both' | 'none';
+}
+
+export const links: CustomEdge[] = [
+  {
+    id: 'a1',
+    source: 'A',
+    target: 'B',
+    label: 'arrow at end',
+    arrowPosition: 'end'
+  },
+  {
+    id: 'a2',
+    source: 'C',
+    target: 'D',
+    label: 'arrow at start',
+    arrowPosition: 'start'
+  },
+  {
+    id: 'a3',
+    source: 'E',
+    target: 'F',
+    label: 'arrow both sides',
+    arrowPosition: 'both'
+  },
+  {
+    id: 'a4',
+    source: 'G',
+    target: 'H',
+    label: 'no arrows',
+    arrowPosition: 'none'
+  }
+];
+
+
+
+
+
+<ng-template #linkTemplate let-link>
+  <svg:g class="edge">
+    <svg:path
+      class="line"
+      stroke="black"
+      stroke-width="2"
+      [attr.id]="link.id"
+      [attr.marker-start]="
+        link.arrowPosition === 'start' || link.arrowPosition === 'both'
+          ? 'url(#arrow-start)'
+          : null
+      "
+      [attr.marker-end]="
+        link.arrowPosition === 'end' || link.arrowPosition === 'both'
+          ? 'url(#arrow-end)'
+          : null
+      "
+    ></svg:path>
+
+    <svg:text class="edge-label" text-anchor="middle">
+      <textPath
+        [attr.href]="'#' + link.id"
+        startOffset="50%">
+        {{ link.label }}
+      </textPath>
+    </svg:text>
+  </svg:g>
+</ng-template>
