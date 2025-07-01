@@ -146,3 +146,76 @@ generateRoundedElbowPath(link: any): string {
   font-size: 12px;
   fill: #444;
 }
+
+
+
+
+
+layout = {
+  name: 'custom',
+  engine: (nodes, links, clusters) => {
+    const updatedLinks = links.map(link => {
+      const source = nodes.find(n => n.id === link.source);
+      const target = nodes.find(n => n.id === link.target);
+      const midX = (source.position.x + target.position.x) / 2;
+
+      return {
+        ...link,
+        points: [
+          { x: source.position.x, y: source.position.y },
+          { x: midX, y: source.position.y },
+          { x: midX, y: target.position.y },
+          { x: target.position.x, y: target.position.y }
+        ]
+      };
+    });
+
+    return { nodes, links: updatedLinks, clusters };
+  }
+};
+
+
+
+
+
+ngAfterViewInit() {
+  setTimeout(() => {
+    this.links = this.links.map(link => {
+      const points = link.points;
+      if (points && points.length >= 2) {
+        const p0 = points[0];
+        const p1 = points[points.length - 1];
+        const midX = (p0.x + p1.x) / 2;
+
+        link.points = [
+          { x: p0.x, y: p0.y },
+          { x: midX, y: p0.y },
+          { x: midX, y: p1.y },
+          { x: p1.x, y: p1.y }
+        ];
+      }
+      return link;
+    });
+  }, 100); // allow layout to settle
+}
+
+buildPathFromPoints(points: { x: number; y: number }[]): string {
+  if (!points || points.length === 0) return '';
+
+  let path = `M ${points[0].x},${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    path += ` L ${points[i].x},${points[i].y}`;
+  }
+  return path;
+}
+
+
+<svg:path
+  class="line"
+  stroke="black"
+  stroke-width="2"
+  fill="none"
+  [attr.d]="buildPathFromPoints(link.points)"
+  marker-end="url(#arrow)" />
+
+
