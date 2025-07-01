@@ -1,0 +1,74 @@
+<ng-template #linkTemplate let-link>
+  <svg:g class="edge">
+    <svg:path
+      class="line"
+      stroke="black"
+      stroke-width="2"
+      [attr.d]="generateElbowPath(link)"
+      [attr.id]="link.id"
+      marker-end="url(#arrow)">
+    </svg:path>
+    <svg:text class="edge-label" text-anchor="middle">
+      <textPath [attr.href]="'#' + link.id" startOffset="50%">
+        {{ link.label }}
+      </textPath>
+    </svg:text>
+  </svg:g>
+</ng-template>
+
+
+
+
+generateElbowPath(link: any): string {
+  const points = link.points;
+  if (!points || points.length < 2) return '';
+
+  const pathParts = [];
+
+  pathParts.push(`M ${points[0].x},${points[0].y}`);
+
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+
+    const dx = curr.x - prev.x;
+    const dy = curr.y - prev.y;
+
+    const radius = 10;
+
+    // For the first straight line
+    if (i === 1) {
+      pathParts.push(`L ${curr.x},${curr.y}`);
+      continue;
+    }
+
+    // For bends: draw a rounded corner
+    const prevPrev = points[i - 2];
+    if (!prevPrev) continue;
+
+    const bendX = prev.x;
+    const bendY = prev.y;
+
+    // Determine corner direction
+    const horizontalFirst = Math.abs(dx) > Math.abs(dy);
+
+    // Draw rounded corner
+    pathParts.push(`Q ${bendX},${bendY} ${curr.x},${curr.y}`);
+  }
+
+  return pathParts.join(' ');
+}
+
+
+
+
+.edge .line {
+  fill: none;
+  stroke: #333;
+  stroke-width: 2;
+}
+
+.edge .edge-label {
+  font-size: 12px;
+  fill: #444;
+}
