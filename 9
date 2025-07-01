@@ -62,6 +62,80 @@ generateElbowPath(link: any): string {
 
 
 
+
+
+generateElbowPath(link: any): string {
+  const points = link.points;
+  if (!points || points.length < 2) return '';
+
+  let path = `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+
+    // Only horizontal or vertical lines
+    if (prev.x !== curr.x && prev.y !== curr.y) {
+      // 90 degree corner: move horizontally, then vertically
+      path += ` L ${curr.x} ${prev.y}`;
+    }
+
+    path += ` L ${curr.x} ${curr.y}`;
+  }
+
+  return path;
+}
+
+
+
+
+
+
+
+generateRoundedElbowPath(link: any): string {
+  const points = link.points;
+  if (!points || points.length < 2) return '';
+
+  const radius = 8; // adjust to make curves tighter or looser
+  let path = `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const next = points[i + 1];
+
+    const dx1 = curr.x - prev.x;
+    const dy1 = curr.y - prev.y;
+    const dx2 = next.x - curr.x;
+    const dy2 = next.y - curr.y;
+
+    // Only smooth 90° turns
+    if ((dx1 === 0 && dy2 === 0) || (dy1 === 0 && dx2 === 0)) {
+      const x = curr.x;
+      const y = curr.y;
+
+      const x1 = x - Math.sign(dx1 || dx2) * radius;
+      const y1 = y - Math.sign(dy1 || dy2) * radius;
+
+      path += ` L ${x1} ${y1}`;
+      path += ` Q ${x} ${y} ${x + Math.sign(dx2) * radius} ${y + Math.sign(dy2) * radius}`;
+    } else {
+      path += ` L ${curr.x} ${curr.y}`;
+    }
+  }
+
+  const last = points[points.length - 1];
+  path += ` L ${last.x} ${last.y}`;
+
+  return path;
+}
+
+
+
+
+
+
+
 .edge .line {
   fill: none;
   stroke: #333;
